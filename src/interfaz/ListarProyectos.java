@@ -22,7 +22,7 @@ public class ListarProyectos {
         VBox layout = new VBox(10);
         layout.setAlignment(Pos.CENTER);
 
-        // Obtener proyectos desde la base de datos
+        // Actualizar la lista de proyectos desde la base de datos
         List<Proyecto> proyectos = controlProyecto.getProyectosDesdeBD();
 
         if (proyectos.isEmpty()) {

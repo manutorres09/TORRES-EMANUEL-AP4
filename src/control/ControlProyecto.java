@@ -112,6 +112,7 @@ public class ControlProyecto {
         return proyectos;
     }
 
+
     public void actualizarProyecto(Proyecto proyecto) {
         String sql = "UPDATE Proyectos SET nombreProyecto = ?, estado = ?, prioridadId = ? WHERE idProyecto = ?";
 
