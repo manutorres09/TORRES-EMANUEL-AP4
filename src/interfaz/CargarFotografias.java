@@ -1,6 +1,7 @@
 package interfaz;
 
 import control.ControlProyecto;
+import control.ControlFoto;
 import entidad.Foto;
 import entidad.Proyecto;
 import javafx.geometry.Pos;
@@ -14,7 +15,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
+
 
 public class CargarFotografias {
 
@@ -51,14 +54,25 @@ public class CargarFotografias {
             Proyecto proyectoSeleccionado = comboProyectos.getValue();
             if (proyectoSeleccionado != null && !labelRutaFoto.getText().contains("Ninguna")) {
                 String rutaFoto = labelRutaFoto.getText().replace("Ruta de la foto: ", "");
-                Foto nuevaFoto = new Foto(rutaFoto);
+                String nombreFoto = new File(rutaFoto).getName(); // Extraer el nombre de la foto desde la ruta
+
+                Foto nuevaFoto = new Foto(0, nombreFoto, new Date(), rutaFoto, proyectoSeleccionado.getId()); // Crear la instancia de Foto
+
+                // Agregar la foto al proyecto en memoria
                 proyectoSeleccionado.agregarFoto(nuevaFoto);
-                System.out.println("Foto agregada al proyecto: " + proyectoSeleccionado.getNombre());
+
+                // Guardar la foto en la base de datos
+                ControlFoto controlFoto = new ControlFoto();
+                controlFoto.guardarFotoEnBD(nuevaFoto);
+
+                System.out.println("Foto agregada al proyecto y almacenada en la base de datos.");
                 ventana.close();
             } else {
                 System.out.println("Seleccione un proyecto y una foto antes de continuar.");
             }
         });
+
+
 
         VBox layout = new VBox(10, labelSeleccion, comboProyectos, btnSeleccionarFoto, labelRutaFoto, btnCargar);
         layout.setAlignment(Pos.CENTER);

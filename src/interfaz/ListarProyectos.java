@@ -22,12 +22,23 @@ public class ListarProyectos {
         VBox layout = new VBox(10);
         layout.setAlignment(Pos.CENTER);
 
-        List<Proyecto> proyectos = controlProyecto.getProyectos();
+        // Obtener proyectos desde la base de datos
+        List<Proyecto> proyectos = controlProyecto.getProyectosDesdeBD();
+
         if (proyectos.isEmpty()) {
             layout.getChildren().add(new Label("No hay proyectos registrados."));
         } else {
             for (Proyecto proyecto : proyectos) {
-                layout.getChildren().add(new Label(proyecto.getNombre()+" || "+ proyecto.getEstado()+" || "+ proyecto.getPrioridad()));
+                // Mostrar los datos de cada proyecto
+                String detalleProyecto = String.format(
+                        "Nombre: %s | Estado: %s | Prioridad: %s | Fecha Inicio: %s | Fecha Entrega: %s",
+                        proyecto.getNombre(),
+                        proyecto.getEstado(),
+                        proyecto.getPrioridad(),
+                        proyecto.getFechaInicio() != null ? proyecto.getFechaInicio().toString() : "N/A",
+                        proyecto.getFechaEntrega() != null ? proyecto.getFechaEntrega().toString() : "N/A"
+                );
+                layout.getChildren().add(new Label(detalleProyecto));
             }
         }
 
@@ -35,7 +46,7 @@ public class ListarProyectos {
         btnCerrar.setOnAction(e -> ventana.close());
         layout.getChildren().add(btnCerrar);
 
-        Scene escena = new Scene(layout, 400, 300);
+        Scene escena = new Scene(layout, 500, 400);
         ventana.setScene(escena);
         ventana.showAndWait();
     }

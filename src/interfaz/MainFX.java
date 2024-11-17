@@ -19,19 +19,19 @@ public class MainFX extends Application {
         primaryStage.setTitle("Sistema de Gestión Fotográfica");
 
         // Crear los botones del menú principal
+        Button btnCrearCliente = new Button("Crear Cliente");
         Button btnCrearProyecto = new Button("Crear Proyecto");
         Button btnListarProyectos = new Button("Listar Proyectos");
         Button btnCargarFotos = new Button("Cargar Fotografías");
         Button btnModificarProyecto = new Button("Modificar Proyecto");
-        Button btnCrearCliente = new Button("Crear Cliente");
         Button btnSalir = new Button("Salir");
 
         // Asignar eventos a los botones
+        btnCrearCliente.setOnAction(e -> FormularioCrearCliente.mostrar(controlCliente));
         btnCrearProyecto.setOnAction(e -> FormularioCrearProyecto.mostrar(controlProyecto, controlCliente));
         btnListarProyectos.setOnAction(e -> ListarProyectos.mostrar(controlProyecto));
         btnCargarFotos.setOnAction(e -> CargarFotografias.mostrar(controlProyecto));
         btnModificarProyecto.setOnAction(e -> ModificarProyecto.mostrar(controlProyecto));
-        btnCrearCliente.setOnAction(e -> FormularioCrearCliente.mostrar(controlCliente));
         btnSalir.setOnAction(e -> primaryStage.close());
 
         // Configurar el layout del menú principal

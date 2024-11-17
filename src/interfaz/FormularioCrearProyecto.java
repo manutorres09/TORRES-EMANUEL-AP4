@@ -4,15 +4,15 @@ import control.ControlProyecto;
 import control.ControlCliente;
 import entidad.Cliente;
 import entidad.Proyecto;
+import entidad.Prioridad;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.time.ZoneId;
 import java.util.Date;
 
 public class FormularioCrearProyecto {
@@ -25,6 +25,11 @@ public class FormularioCrearProyecto {
         // Campo de texto para el nombre del proyecto
         TextField campoNombre = new TextField();
         campoNombre.setPromptText("Nombre del Proyecto");
+
+        // TextArea para la descripción del proyecto
+        TextArea areaDescripcion = new TextArea();
+        areaDescripcion.setPromptText("Descripción del Proyecto");
+        areaDescripcion.setWrapText(true); // Habilitar ajuste de línea
 
         // ComboBox para el estado del proyecto
         ComboBox<String> comboEstado = new ComboBox<>();
@@ -39,40 +44,62 @@ public class FormularioCrearProyecto {
         // ComboBox para seleccionar un cliente
         ComboBox<Cliente> comboClientes = new ComboBox<>();
         comboClientes.setPromptText("Seleccionar Cliente");
-        comboClientes.getItems().addAll(controlCliente.getClientes()); // Obtener lista de clientes
+        comboClientes.getItems().addAll(controlCliente.getClientesDesdeBD()); // Obtener lista de clientes
+
+        // Campos para seleccionar fechas (Fecha de inicio y fecha de entrega)
+        DatePicker dateInicio = new DatePicker();
+        dateInicio.setPromptText("Fecha de inicio");
+
+        DatePicker dateEntrega = new DatePicker();
+        dateEntrega.setPromptText("Fecha de entrega");
 
         // Botón para guardar el proyecto
         Button btnGuardar = new Button("Guardar");
         btnGuardar.setOnAction(e -> {
-            // Crear un proyecto con los datos ingresados
-            Cliente clienteSeleccionado = comboClientes.getValue(); // Obtener cliente seleccionado
+            Cliente clienteSeleccionado = comboClientes.getValue();
 
             if (clienteSeleccionado == null) {
                 System.out.println("Error: Debes seleccionar un cliente.");
-                return; // No permite guardar si no hay cliente seleccionado
+                return;
             }
 
+            // Validar campos obligatorios
+            if (campoNombre.getText().trim().isEmpty() || areaDescripcion.getText().trim().isEmpty()) {
+                System.out.println("Error: El nombre y la descripción del proyecto son obligatorios.");
+                return;
+            }
+
+            // Convertir prioridad de texto a entero
+            int prioridadId = Prioridad.convertirPrioridad(comboPrioridad.getValue());
+            if (prioridadId == -1) {
+                System.out.println("Error: Prioridad inválida.");
+                return;
+            }
+
+
+            Date fechaInicioDate = Date.from(dateInicio.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            Date fechaEntregaDate = Date.from(dateEntrega.getValue().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
             Proyecto proyecto = new Proyecto(
-                    campoNombre.getText(), new Date(), new Date(),
-                    comboEstado.getValue(), comboPrioridad.getValue()
+                    campoNombre.getText(), fechaInicioDate, fechaEntregaDate,
+                    comboEstado.getValue(), String.valueOf(prioridadId)
             );
 
-            // Asociar el proyecto al cliente seleccionado
+            proyecto.setDescripcion(areaDescripcion.getText());
             proyecto.setCliente(clienteSeleccionado);
 
-            // Guardar el proyecto utilizando el control de proyectos
             controlProyecto.crearProyecto(proyecto);
 
             System.out.println("Proyecto creado para el cliente: " + clienteSeleccionado.getNombre());
-
-            ventana.close(); // Cerrar la ventana después de guardar
+            ventana.close();
         });
 
+
         // Layout para organizar los elementos en la interfaz
-        VBox layout = new VBox(10, campoNombre, comboEstado, comboPrioridad, comboClientes, btnGuardar);
+        VBox layout = new VBox(10, campoNombre, areaDescripcion, comboEstado, comboPrioridad, comboClientes, dateInicio, dateEntrega, btnGuardar);
         layout.setAlignment(Pos.CENTER);
 
-        Scene escena = new Scene(layout, 300, 300);
+        Scene escena = new Scene(layout, 400, 400);
         ventana.setScene(escena);
         ventana.showAndWait();
     }
